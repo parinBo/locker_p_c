@@ -1,0 +1,25 @@
+﻿@{ Layout = "_Layout";
+    var c = ViewBag.user;
+}
+@model IEnumerable<showclass>
+<h1>Locker @ViewData["id"] detail:</h1>
+<br />
+<a href="/booking/Reserve?id=@ViewData["id"]" class="btn btn-outline-primary">Reservation</a>
+<br />
+<br />
+<br />
+<div class="row">
+    <div class="col-4 mb-2 h4">Booking start</div>
+    <div class="col-4 mb-2 h4">Booking end</div>
+    <div class="col-4 mb-2 h4">Owner</div>
+</div>
+
+@foreach (var i in Model)
+{
+        <div class="row mt-2">
+            <div class="col-4 mb-2 ">@i.Bookingstart.ToString("dd-MM-yyyy (HH:mm)")</div>
+            <div class="col-4 mb-2 ">@i.BookingEnd.ToString("dd-MM-yyyy (HH:mm)")</div>
+            <div class="col-4 mb-2 ">@i.username </div>
+        </div>
+
+}

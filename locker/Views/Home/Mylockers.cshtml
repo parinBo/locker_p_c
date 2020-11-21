@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "_Layout";
+}
+@model IEnumerable<locker.Models.showclass>
+    <link rel="stylesheet" href="~/css/myCss.css">
+    <div class="d-flex justify-content-center">
+        <div class="card mt-4" style="width: 20rem;background-color:darkgoldenrod">
+
+            <div class="card-body" style="background-color:orange">
+                <h5 class="card-title">Hello! @TempData["username"] </h5>
+                <p class="card-text">Detail your box's reservation</p>
+                <p class="card-text">Locker number : @ViewBag.Boxid</p>
+            </div>
+            @foreach (var i in Model)
+            {
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">booking start : @i.Bookingstart</li>
+                    <li class="list-group-item">booking end : @i.BookingEnd</li>
+                        <li class="list-group-item">
+                            status :
+                            <input type="checkbox" id="myCheck" class="checkbox" />
+                            <label for="myCheck" class="toggle" id="label"> </label>
+                        </li>
+                    <li class="list-group-item"><button class="ml-3 btn btn-outline-danger" id="cancel">Cancel</button></li>
+                </ul>
+            }
+        </div>
+    </div>
+    <script>
+        var label = document.getElementById("label");
+        var button = document.getElementById("myCheck");
+        button.checked=@ViewBag.setCheckbox;
+        if (@ViewData["canUse"]) {
+            button.disabled = true;
+            label.style.background = "gray";
+        }
+        button.addEventListener('click', e => {
+            if (button.checked == true) {
+                console.log("on")
+                var url = "http://192.168.2.64/on_off.php?on"
+                $.post(url);
+                $.ajax({
+                    url: "/home/authLocker/" + @ViewBag.Boxid,
+                    type: 'PUT',
+                    data: "value=1",
+                    success: function (data) {
+                        console.log("1")
+                        console.log("/home/authLocker/" + @ViewBag.Boxid);
+                    }
+                });
+            }
+            else {
+                console.log("off  ")
+                var url = "http://192.168.2.64/on_off.php?off";
+                $.post(url);
+                $.ajax({
+                    url: "/home/authLocker/" + @ViewBag.Boxid,
+                    type: 'PUT',
+                    data: "value=0" ,
+                    success: function (data) {
+                        console.log("0")
+                    }
+                });
+            }
+        })
+
+        var cancel = document.getElementById("cancel");
+        cancel.addEventListener('click', e => {
+            var result = confirm("Are you sure?\nYou will cancel this box");
+            if (result == true) {
+                enter = true;
+            } else {
+                enter = false;
+            }
+            if (enter) {
+                $.ajax({
+                    url: "/home/delete/" + @ViewBag.Boxid,
+                    type: 'DELETE',
+                    success: function (data) {
+                        console.log("delete success")
+                        window.location.href = "/home";
+
+                    }
+                });
+            }
+
+        })
+
+    </script>

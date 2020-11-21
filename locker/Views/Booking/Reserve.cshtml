@@ -1,0 +1,77 @@
+﻿@{ Layout = "_Layout";
+    string times = ViewBag.min;
+}
+@model locker.Models.Booking
+<br>
+<h3>Locker @ViewData["id"] reserved</h3>
+<h4 style="color: red;">@ViewBag.notMsg</h4>
+<br>
+
+<form method="post" action="/booking/authPost">
+
+    @* Start date *@
+    <div class="row" id="start" >
+        <div class="col-sm-5">
+            <div class="form-group">
+                <span class="form-label">Date</span>
+                @Html.TextBoxFor(m => m.startdate, new { @class = "form-control", @type = "date", @min = ViewBag.today, @max = ViewBag.addDays, @required = "required" })
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <span class="form-label">Time</span>
+                        @Html.DropDownListFor(m => m.starttime, new List<SelectListItem>
+                   {
+                       new SelectListItem{Text = "8.00-12.00"},
+                       new SelectListItem{Text = "13.00-17.00"},
+                   }, "Select time", new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    @* End date *@
+    @*<div class="row" id="end" style="display: none;">
+        <div class="col-sm-5">
+            <div class="form-group">
+                <span class="form-label">End</span>
+                @Html.TextBoxFor(m => m.enddate, new { @class = "form-control", @type = "date", @required = "required" })
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <span class="form-label">Time</span>
+                        @Html.DropDownListFor(m => m.endtime, new List<SelectListItem>
+                   {
+                       new SelectListItem{Text = "8.00-12.00"},
+                       new SelectListItem{Text = "13.00-17.00"},
+                   }, "Select time", new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+    <div>
+        <button class="btn btn-outline-danger" id="btn" type="submit">Book now</button>
+    </div>
+</form>
+
+<script>
+    if ("@ViewBag.show" ==="true") {
+        alert("@ViewBag.msg")
+    }
+    if("@ViewBag.notReservation"==="true"){
+        document.getElementById("btn").disabled = true;
+    }
+    function preventBack() { window.history.forward(); }
+    setTimeout("preventBack()", 0);
+    window.onunload = function () { null };
+</script>
+<style>
+</style>

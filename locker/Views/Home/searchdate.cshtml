@@ -1,0 +1,56 @@
+﻿@{ Layout = "_Layout";
+    var locker = "";
+    string link = "";
+    var widSize = 45; }
+@model IEnumerable<Box>
+<div class="text-center">
+    <div class="display-4">Locker</div><br><br>
+    <h6></h6>
+    <form method="get" action="/home/searchdate">
+        <div class="row">
+            <div class="col-2">
+            </div>
+
+            <div class="col-5">
+                <input id="datetime" class="form-control" max="@ViewBag.addDays" min="@ViewBag.today" name="date" type="date" value="@ViewBag.today">
+            </div>
+            <div class="col-2">
+                <input type="submit" value="search" class="btn btn-success" />
+            </div>
+        </div>
+    </form>
+
+
+    <div class="row mb-3 mt-3">
+        <div class="col-12">
+            <div class="row">
+                @foreach (var i in Model)
+                {
+                    @if (i.Boxstatus == 0)
+                    {
+                        locker = "locker_empty.png";
+                        link = "/booking/Reserve?id=" + @i.Boxid;
+                    }
+                    else if (i.Boxstatus == 1)
+                    {
+                        locker = "locker_between.png";
+                        link = "/booking?id=" + @i.Boxid;
+                    }
+                    else
+                    {
+                        locker = "locker_busy.png";
+                        link = "/booking?id=" + @i.Boxid;
+
+                    }
+                    <div class="col-md-4 col-6">
+                        <p>@i.Boxid</p>
+                        <a href="@link"><img src="~/images/@locker" width="@widSize%" /></a><br /><br /><br /><br />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+</div>
+

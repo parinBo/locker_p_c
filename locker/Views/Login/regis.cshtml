@@ -1,0 +1,29 @@
+﻿@{
+    Layout = null;
+}
+@model locker.Models.User
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/signin.css" />
+<form class="form-signin" method="post" action="/login/authRegis">
+    @*<img class="mb-4" src="../assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">*@
+    <h1 class="h3 mb-3 mt-3 font-weight-normal " style="color: white;">Register</h1>
+    <p style="color:red;background-color:wheat">@ViewBag.msg</p>
+    <label for="inputEmail" class="sr-only">Username</label>
+    @Html.TextBoxFor(m => m.Username, new { @class = "form-control mb-2", @placeholder = "Username", @required = "required", @autofocus = "autofocus", @maxlength = "10" })
+    <label for="inputPassword" class="sr-only">Password</label>
+    @Html.PasswordFor(m => m.Password, new { @class = "form-control mt-3", @placeholder = "password", @required = "required" })
+    <br />
+    <div class="row mt-1">
+        <div class="col-9" style="color: white;">Have an account?</div>
+        <div class="col-3 "><a class="btn btn-outline-info" style="color: white;" href="/">back</a></div>
+    </div><br>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
+</form>
+
+<script type="text/javascript">
+    if ('@ViewBag.isLogin' === 'true') {
+        alert(`@ViewBag.msg`)
+    }
+
+</script>
