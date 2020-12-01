@@ -55,9 +55,14 @@ namespace locker.Controllers
             {
                 var i = this.boxTime.First();
                 //check today you can use open/close the box : 0 = have not, : 1 = have
-                var use = _ctx.Boxtimes.Where(u => u.Bookingstart.Value.Date == DateTime.Now.Date).Where(u => u.Userid == Userid).Count();
-                Console.WriteLine("can use in this day: " + use);
-                var username = use == 0 ? "true" : "false";
+                var use = _ctx.Boxtimes.Where(i => i.Userid == Userid).Where(u => u.Bookingstart.Value.Date == DateTime.Now.Date);
+                string username = "true";
+                if (use.Count() != 0)
+                {
+                    username = (!(use.First().Bookingstart.Value.TimeOfDay <= DateTime.Now.TimeOfDay)).ToString().ToLower();
+                    Console.WriteLine(use.First().Bookingstart);
+                }
+                Console.WriteLine(username+"  ");
                 show.Add(new showclass {Bookingstart=(DateTime)i.Bookingstart,BookingEnd=(DateTime)i.BookingEnd,username=username,Boxid=(int)i.Boxid });
             }
             return show;

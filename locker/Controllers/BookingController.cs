@@ -15,7 +15,6 @@ namespace locker.Controllers
     {
         private readonly Contxtdb ctx = new Contxtdb();
 
-        // GET: /<controller>/
         public IActionResult Index(int id)
         {
             var logon = HttpContext.Session.GetInt32("login")==1?true:false;
@@ -94,8 +93,8 @@ namespace locker.Controllers
                 ctx.Users.Where(t=>t.Userid == Userid).First().Has=1;
                 ctx.SaveChanges();
             }
-           
-            return RedirectToAction("index",new { id= id });
+
+            return Redirect("/home/Mylockers");
         }
     }
 }

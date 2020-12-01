@@ -81,34 +81,51 @@ namespace locker.Controllers
 
         public IActionResult Mylockers()
         {
-            TempData["username"] = HttpContext.Session.GetString("username");
-            var Userid = (int)HttpContext.Session.GetInt32("Userid");
-            var box = _ctx.Boxtimes.Where(b => b.Userid == Userid);
-            var boxes = new List<showclass>();
-            int Boxid = 0 ;
-            string set = "";
-            manage.fit(box.ToList());
-            manage.checkDateExp();
-            boxes = manage.getMyLocker(Userid);
-            foreach(var i in boxes)
+            try
             {
-                ViewData["canUse"] = i.username;
-                ViewBag.Boxid = i.Boxid;
-                set = _ctx.Boxs.Where(a => a.Boxid == i.Boxid).First().BoxCheck == 1 ? "true" : "false";
+                TempData["username"] = HttpContext.Session.GetString("username");
+                var Userid = (int)HttpContext.Session.GetInt32("Userid");
+                var box = _ctx.Boxtimes.Where(b => b.Userid == Userid);
+                var boxes = new List<showclass>();
+                int Boxid = 0;
+                string set = "";
+                manage.fit(box.ToList());
+                manage.checkDateExp();
+                boxes = manage.getMyLocker(Userid);
+                foreach (var i in boxes)
+                {
+                    ViewData["canUse"] = i.username;
+                    ViewBag.Boxid = i.Boxid;
+                    set = _ctx.Boxs.Where(a => a.Boxid == i.Boxid).First().BoxCheck == 1 ? "true" : "false";
+                    ViewBag.pinBox = _ctx.Boxs.Where(a => a.Boxid == i.Boxid).First().Pin;
+                }
+                ViewBag.setCheckbox = set;
+                return View(boxes);
             }
-            ViewBag.setCheckbox = set;
-            return View(boxes);
+            catch
+            {
+                return Redirect("/");
+            }
+            
         }
 
         [HttpPut]
         [Route("home/authLocker/{id}")]
         public string Put(int id,int value)
         {
-            var Userid = HttpContext.Session.GetInt32("Userid");
-            var boxTime = _ctx.Boxtimes.Where(i => i.Bookingstart.Value.Date == DateTime.Now.Date).Where(i => i.Userid == Userid).First();
-            _ctx.Boxs.Where(i => i.Boxid == boxTime.Boxid).First().BoxCheck = value;
-            _ctx.SaveChanges();
-            return "Put Method is work " + value;
+            try
+            {
+                var Userid = HttpContext.Session.GetInt32("Userid");
+                var boxTime = _ctx.Boxtimes.Where(i => i.Bookingstart.Value.Date == DateTime.Now.Date).Where(i => i.Userid == Userid).First();
+                _ctx.Boxs.Where(i => i.Boxid == boxTime.Boxid).First().BoxCheck = value;
+                _ctx.SaveChanges();
+                return "Put Method is work " + value;
+            }
+            catch
+            {
+                return "error";
+            }
+            
         }
 
         [HttpDelete]

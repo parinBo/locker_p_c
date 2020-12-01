@@ -37,29 +37,22 @@
         button.addEventListener('click', e => {
             if (button.checked == true) {
                 console.log("on")
-                var url = "http://192.168.2.64/on_off.php?on"
+                var url = "http://192.168.43.44/on_off.php?on=@ViewBag.pinBox"
                 $.post(url);
                 $.ajax({
                     url: "/home/authLocker/" + @ViewBag.Boxid,
                     type: 'PUT',
-                    data: "value=1",
-                    success: function (data) {
-                        console.log("1")
-                        console.log("/home/authLocker/" + @ViewBag.Boxid);
-                    }
+                    data: "value=1"
                 });
             }
             else {
                 console.log("off  ")
-                var url = "http://192.168.2.64/on_off.php?off";
+                var url = "http://192.168.43.44/on_off.php?off=@ViewBag.pinBox";
                 $.post(url);
                 $.ajax({
                     url: "/home/authLocker/" + @ViewBag.Boxid,
                     type: 'PUT',
-                    data: "value=0" ,
-                    success: function (data) {
-                        console.log("0")
-                    }
+                    data: "value=0" 
                 });
             }
         })
