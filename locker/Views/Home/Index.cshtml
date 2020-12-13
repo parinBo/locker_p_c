@@ -1,8 +1,9 @@
 ﻿@{ Layout = "_Layout";
     var locker = "";
     string link = "";
-    var widSize = 45; }
+    var widSize = 100; }
 @model IEnumerable<Box>
+<link rel="stylesheet" href="~/css/time-modal.css" />
 <div class="text-center">
     <div class="display-4">Locker</div><br><br>
     <h6></h6>
@@ -44,11 +45,70 @@
                     }
                     <div class="col-md-4 col-6">
                         <p>@i.Boxid</p>
-                        <a href="@link"><img src="~/images/@locker" width="@widSize%" /></a><br /><br /><br /><br />
+                        <button type="button" id="@i.Boxid" class="btn" data-toggle="modal" data-target="#exampleModal" style="width:60%">
+                            <img src="~/images/@locker" width="@widSize%" />
+                        </button>
+                        <a href="@link"></a><br /><br /><br /><br />
                     </div>
                 }
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-time">
+                    <div class="timings">
+                        <div> <span> 9:00 </span> AM </div>
+                        <div> 9:30 </div>
+                        <div> <span> 10:00 </span>AM </div>
+                        <div> 10:30 </div>
+                        <div> <span> 11:00 </span>AM </div>
+                        <div> 11:30 </div>
+                        <div> <span> 12:00 </span>PM </div>
+                        <div> 12:30 </div>
+                        <div> <span> 1:00 </span>PM </div>
+                        <div> 1:30 </div>
+                        <div> <span> 2:00 </span>PM </div>
+                        <div> 2:30 </div>
+                        <div> <span> 3:00 </span>PM </div>
+                        <div> 3:30 </div>
+                        <div> <span> 4:00 </span>PM </div>
+                        <div> 4:30 </div>
+                        <div> <span> 5:00 </span>PM </div>
+                        <div> 5:30 </div>
+                        <div> <span> 6:00 </span>PM </div>
+                        <div> 6:30 </div>
+                        <div> <span> 7:00 </span>PM </div>
+                        <div> 7:30 </div>
+                        <div> <span> 8:00 </span>PM </div>
+                        <div> 8:30 </div>
+                        <div> <span> 9:00 </span>PM </div>
+                    </div>
 
+                    <div class="days" id="events">
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">var obj1 = "somevalue";
+    var obj2 = "someothervalue";</script>
+<script src="~/js/script.js"></script>
+<script src="~/js/layOutDay.js"></script>

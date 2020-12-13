@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using locker.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,9 +97,49 @@ namespace locker.Controllers
             //return boxTime;
         }
 
-        internal List<Boxtime> getMyLocker(int? userid)
+        [HttpPost]
+        [Route("booking/authPost")]
+        public IActionResult authPost(Booking b)
         {
-            throw new NotImplementedException();
+            DateTime reservation = b.startdate;
+            DateTime s, e;
+            var Userid = HttpContext.Session.GetInt32("Userid");
+            int id = (int)TempData["id"];
+            if (Regex.IsMatch(b.starttime, @"\b8"))
+            {
+                s = new DateTime(reservation.Year, reservation.Month, reservation.Day, 8, 0, 0);
+                e = new DateTime(reservation.Year, reservation.Month, reservation.Day, 12, 0, 0);
+            }
+            else
+            {
+                s = new DateTime(reservation.Year, reservation.Month, reservation.Day, 13, 0, 0);
+                e = new DateTime(reservation.Year, reservation.Month, reservation.Day, 17, 0, 0);
+
+            }
+            var book = _ctx.Boxtimes.Where(u => u.Bookingstart == s).Where(b => b.Boxid == id).Count();
+            if (book >= 1)
+            {
+                TempData["show"] = "true";
+                TempData["msg"] = "this time is busy";
+                Console.WriteLine("you cannot booking");
+                return RedirectToAction("Reserve", new { id = id });
+            }
+            else
+            {
+                var u = _ctx.Users.Where(i => i.Userid == Userid).First().Username;
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine("wwwroot", "Reservation.txt"), true))
+                {
+                    outputFile.WriteLine($"Booking:{s.ToString("dd/MM/yyyy HH:mm:ss")},{e.ToString("dd/MM/yyyy HH:mm:ss")},{Userid},Locker number {id},At {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")},By {u}");
+                }
+                // add box and change status use has box
+                Boxtime boxtime = new Boxtime { Bookingstart = s, BookingEnd = e, Boxid = id, Userid = Userid };
+                _ctx.Boxtimes.Add(boxtime);
+                _ctx.Users.Where(t => t.Userid == Userid).First().Has = 1;
+                _ctx.SaveChanges();
+            }
+
+            return Redirect("/home/Mylockers");
         }
+
     }
 }

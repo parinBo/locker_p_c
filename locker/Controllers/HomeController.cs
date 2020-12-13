@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using locker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-
+using System.IO;
 
 namespace locker.Controllers
 {
@@ -107,6 +107,52 @@ namespace locker.Controllers
                 return Redirect("/");
             }
             
+        }
+        public IActionResult file()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Route("home/get")]
+        public IActionResult file(string input)
+        {
+            string[] lines = System.IO.File.ReadAllLines(Path.Combine("wwwroot", "Reservation.txt"));
+            var find = new List<string>();
+            int count = 0;
+            foreach (var i in lines)
+            {
+                var n = i.Replace(",", "");
+                var start = n.Substring(8, 19);
+                var end = n.Substring(27, 19);
+                var locker = n.Substring(48, 15);
+                var num = n.Substring(62, 1);
+                var at = n.Substring(63, 22);
+                var user = n.Substring(85);
+                if (num == input)
+                {
+                    find.Add(locker);
+                    find.Add($"{at} ==>start: {start} end: {end} // {user}");
+                    count++;
+                }
+                if ("all" == input)
+                {
+                    find.Add(locker);
+                    find.Add($"{at} ==>start: {start} end: {end}  // {user}");
+                    count++;
+                }
+                Console.WriteLine($"{locker}\nstart: {start} and end: {end}  {num} {at} {user}");
+            }
+
+            if (input != null)
+            {
+                ViewBag.count = count;
+                return View(find);
+            }
+            else
+            {
+                return View();
+            }
         }
 
         [HttpPut]
