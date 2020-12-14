@@ -1,9 +1,16 @@
 //default events given
-const events = [{ start: 0, end: 90 }, { start: 90, end: 180 }];
+var e= [];
+$.get('https://localhost:5001/home/time', function (data) {
+    layOutDay(data);
+    data.forEach(element => console.log(element.start + "   " + element.end));
+});
 
-layOutDay(events);
+//const events = [{ start: 0, end: 90 }, { start: 90, end: 180 }, { start: 300, end: 360 }];
+
+//layOutDay(events);
 
 //function to generate mock events for testing
+
 function generateMockEvents(n) {
     let events = [];
     let minutesInDay = 60 * 12;

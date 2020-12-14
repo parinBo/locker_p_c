@@ -11,14 +11,15 @@ $(document).ready(function () {
     });
 })
 
+
 // append one event to calendar
 
-var createEvent = (height, top, left, units) => {
+var createEvent = (height, top, left, units,name) => {
     let node = document.createElement("DIV");
     node.className = "event";
     node.innerHTML =
-        "<span class='title'> Parinya </span> \
-  <br><span class='location'> Sample Location </span>";
+        "<span class='title'> "+name+" </span > "
+  //<br><span class='location'> Sample Location </span>";
 
     // Customized CSS to position each event
     node.style.width = (containerWidth / units / 2) + "px";
@@ -65,7 +66,7 @@ function getCollisions(events) {
                 }
                 order++;
             }
-
+            console.log("order : " + order);
             collisions[timeIndex][id] = order;
             start = start + 30;
         }
@@ -114,7 +115,6 @@ function getAttributes(events) {
         }
     });
 };
-
 var layOutDay = (events) => {
 
     // clear any existing nodes
@@ -125,6 +125,7 @@ var layOutDay = (events) => {
     getAttributes(events);
 
     events.forEach((event, id) => {
+        console.log("name "+event.name)
         let height = (event.end - event.start) / minutesinDay * containerHeight;
         let top = event.start / minutesinDay * containerHeight;
         let end = event.end;
@@ -133,6 +134,23 @@ var layOutDay = (events) => {
         if (!units) { units = 1 };
         let left = (containerWidth / width[id]) * (leftOffSet[id] - 1) + 10;
         if (!left || left < 0) { left = 10 };
-        createEvent(height, top, left, units);
+        createEvent(height, top, left, units, event.name);
     });
 }
+
+
+const events = [];
+var obj;
+//var test = fetch("https://localhost:5001/home/time").then(res => res.json()).then(data => return data)
+
+function doSomethingWithText(text) {
+    console.log(text);
+    this.obj = JSON.parse(text);
+    console.log(obj.start)
+
+}
+
+fetch('https://localhost:5001/home/time')
+    .then(data => data.text())
+    .then(text => doSomethingWithText(text))
+//layOutDay(events);

@@ -141,5 +141,37 @@ namespace locker.Controllers
             return Redirect("/home/Mylockers");
         }
 
+        [HttpPut]
+        [Route("home/authLocker/{id}")]
+        public string Put(int id, int value)
+        {
+            try
+            {
+                var Userid = HttpContext.Session.GetInt32("Userid");
+                var boxTime = _ctx.Boxtimes.Where(i => i.Bookingstart.Value.Date == DateTime.Now.Date).Where(i => i.Userid == Userid).First();
+                _ctx.Boxs.Where(i => i.Boxid == boxTime.Boxid).First().BoxCheck = value;
+                _ctx.SaveChanges();
+                return "Put Method is work " + value;
+            }
+            catch
+            {
+                return "error";
+            }
+
+        }
+
+        [HttpDelete]
+        [Route("home/delete/{id}")]
+        public string delete(int id)
+        {
+            var Userid = (int)HttpContext.Session.GetInt32("Userid");
+            var cancel = _ctx.Boxtimes.Where(u => u.Userid == Userid).Where(u => u.Boxid == id).First();
+            _ctx.Users.Where(i => i.Userid == Userid).First().Has = 0;
+            _ctx.Boxtimes.Remove(cancel);
+            _ctx.SaveChanges();
+            return id + "";
+        }
+
+
     }
 }

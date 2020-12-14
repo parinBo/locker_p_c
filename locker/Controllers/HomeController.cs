@@ -9,6 +9,8 @@ using locker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace locker.Controllers
 {
@@ -155,35 +157,34 @@ namespace locker.Controllers
             }
         }
 
-        [HttpPut]
-        [Route("home/authLocker/{id}")]
-        public string Put(int id,int value)
+        [HttpGet]
+        public JsonResult time(int id)
         {
-            try
+            var times = _ctx.Boxtimes.Where(i => i.Boxid == id).Where(i => i.Bookingstart.Value.Day == DateTime.Now.Day);
+            //  var usersList = new List<TimeEvent> { new TimeEvent { start=0,end=30},new TimeEvent { start = 90, end = 180 } };
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            var a = new List<Dictionary<string, string>>();
+            foreach(var i in times)
             {
-                var Userid = HttpContext.Session.GetInt32("Userid");
-                var boxTime = _ctx.Boxtimes.Where(i => i.Bookingstart.Value.Date == DateTime.Now.Date).Where(i => i.Userid == Userid).First();
-                _ctx.Boxs.Where(i => i.Boxid == boxTime.Boxid).First().BoxCheck = value;
-                _ctx.SaveChanges();
-                return "Put Method is work " + value;
+                if (Regex.IsMatch(i.Bookingstart.Value.Hour.ToString(), @"\b8"))
+                {
+
+                }
+                    Console.WriteLine(i.Bookingstart);
             }
-            catch
-            {
-                return "error";
-            }
-            
+            var boss = new List<TimeEvent>();
+            boss.Add(new TimeEvent { start = 0, end = 30, });
+            boss.Add(new TimeEvent { start = 30, end = 90, });
+            d.Add("start", "240");
+            d.Add("end", "360");
+            d.Add("name", "test");
+            a.Add(d);
+
+            //return boss;
+
+            var jsonString = JsonConvert.SerializeObject(boss).Replace("\u0022", "");
+            return Json(jsonString);
         }
 
-        [HttpDelete]
-        [Route("home/delete/{id}")]
-        public string delete(int id )
-        {
-            var Userid = (int)HttpContext.Session.GetInt32("Userid");
-            var cancel = _ctx.Boxtimes.Where(u => u.Userid == Userid).Where(u => u.Boxid == id).First();
-            _ctx.Users.Where(i => i.Userid == Userid).First().Has = 0;
-            _ctx.Boxtimes.Remove(cancel);
-            _ctx.SaveChanges();
-            return id + "";
-        }
     }
 }
