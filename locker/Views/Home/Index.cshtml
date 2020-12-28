@@ -1,17 +1,136 @@
 ﻿@{ Layout = "_Layout";
-    var locker = "";
-    string link = "";
-    var widSize = 100; }
+    var color = new List<string>(); }
 @model IEnumerable<Box>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/2.14.1/moment.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" href="~/css/time-modal.css" />
+<link rel="stylesheet" href="~/css/main.css" />
+<style>
+    path {
+        cursor: grabbing
+    }
+    #Capa_1{
+        width:30%;
+    }
+</style>
+<script src="~/js/script.js"></script>
+<script type='text/javascript'>
+    var urlParams = new URLSearchParams(window.location.search);
+    var date = urlParams.get('date')
+    $(document).ready(function () {
+        if (date == null) {
+            date = new Date
+        }
+        let updowntime = moment(date)
+        $("#selecttime2").toggle();
+        $("#selecttimebtn").click(() => {
+            $("#selecttime1").toggle();
+            $("#selecttime2").toggle();
+        })
+        $("#timeshowinput").val(updowntime.format('Do MMMM YYYY'))
+
+        $("#downdate").click(() => {
+            updowntime.add(-1, 'd');
+            $("#timeshowinput").val(updowntime.format('Do MMMM YYYY'))
+            location.href = "?date=" + updowntime.format('YYYY-MM-DD')
+        })
+        $("#update").click(() => {
+            updowntime.add(+1, 'd');
+            $("#timeshowinput").val(updowntime.format('Do MMMM YYYY'))
+            location.href = "?date=" + updowntime.format('YYYY-MM-DD')
+        })
+
+        $("#timeshowinput").attr("disabled", "true")
+    })
+  
+</script>
+<script type='text/javascript'>
+        $(document).ready(function () {
+            width = window.screen.width;
+            $("#svg8").attr("width", width + "px")
+            $("#modalbody2").toggle()
+            $("#modalbody3").toggle()
+            $("#tent").toggle();
+
+            $('#datetimepicker1').datetimepicker({
+            format: 'DD/MM/YYYY HH:mm',
+                minDate: moment(),
+                maxDate: moment().add(7, 'days')
+            });
+
+            $('#datetimepicker2').datetimepicker({
+            format: 'DD/MM/YYYY HH:mm',
+                maxDate: moment().add(7, 'days')
+            });
+            $("#datetimepicker1").on("dp.change", function (e) {
+                var oldDate = new Date(e.date);
+                var newDate = new Date();
+                newDate.setDate(oldDate.getDate());
+                $('#datetimepicker2').data("DateTimePicker").minDate(newDate);
+            });
+            $("#book").click(() => {
+            $("#modalbody1").toggle()
+                $("#modalbody2").toggle()
+            });
+        });
+
+</script>
+<script type="text/javascript">
+    $().ready(function () {
+        $.get("manage/getHas", (data) => {
+            $("#submit").attr("disabled", data);
+            if (data) {
+                $("#warninghead").text("you cannot reservation")
+                $('input[type=text]').each(function () { $(this).attr('disabled', true); })
+            }
+        });
+        $.get("manage/getauthPost", (data) => {
+            if (data == "1") {
+                $("#mfmodal").modal()
+            }
+            else if (data == "0") {
+                $("#mmodal").modal()
+                setTimeout(function () {
+                    $('body').addClass('loaded');
+                    $("#tent").toggle();
+                }, 800);
+            }
+        })
+    })
+</script>
+@foreach (var i in Model)
+{
+    if (i.Boxstatus == 0)
+    {
+        color.Add("#0f0");
+    }
+    else if (i.Boxstatus >= 1)
+    {
+        color.Add("#ED0443");
+    }
+}
+
 <div class="text-center">
+
     <div class="display-4">Locker</div><br><br>
-    <h6></h6>
-    <form method="get" action="/home/searchdate">
+    <button id="selecttimebtn" class="btn btn-sm btn-info" >Select date</button>
+    <nav aria-label="..." id="selecttime1">
+        <ul class="pager">
+            <div class="row">
+                <li class="col-sm-4"><a id="downdate">Previous</a></li>
+                <li class="col-sm-4"><input type="text" id="timeshowinput" /></li>
+                <li class="col-sm-4 "><a id="update">Next</a></li>
+            </div>
+        </ul>
+    </nav>
+    <form method="get" action="" id="selecttime2">
         <div class="row">
             <div class="col-2">
             </div>
-
             <div class="col-5">
                 <input class="form-control" id="datetime" max="@ViewBag.addDays" min="@ViewBag.today" name="date" type="date" value="">
             </div>
@@ -20,91 +139,172 @@
             </div>
         </div>
     </form>
+    <div class="row">
+        <div class="col-12" style="display:inline-flex">
+            <svg id="svg8" version="1.1" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                <metadata id="metadata5">
+                    <rdf:RDF>
+                        <cc:Work rdf:about="">
+                            <dc:format>image/svg+xml</dc:format>
+                            <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+                            <dc:title />
+                        </cc:Work>
+                    </rdf:RDF>
+                </metadata>
+                <g id="layer1">
+                    <g id="g72">
+                        <path id="rect12" d="m18.71 10.961h120.57v53.414h-120.57z" fill="#fa9538" stroke-width=".18778" />
+                        <path id="rect12-4" d="m22.679 14.363h114.05v45.618h-114.05z" stroke-width=".16878" />
+                        <g id="g265">
+                            <path id="1" data-toggle="modal" data-target="#exampleModal" d="m24.379 15.686 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill=@color.ElementAt(0) stroke-width=".062231" />
+                            <text id="text146" x="51.182114" y="24.187891" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144" x="51.182114" y="24.187891" stroke-width=".26458">1</tspan></text>
+                            <rect id="rect216" x="28.309" y="21.726" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731" />
+                        </g>
+                        <g id="g266">
+                            <path id="4" data-toggle="modal" data-target="#exampleModal" d="m24.237 37.713 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill=@color.ElementAt(3) stroke-width=".062231" />
+                            <text id="text146-0" x="51.595562" y="45.146549" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-3" x="51.595562" y="45.146549" stroke-width=".26458">4</tspan></text>
+                            <rect id="rect216-8" x="28.841" y="43.231" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731" />
+                        </g>
+                        <g id="g271">
+                            <path id="2" data-toggle="modal" data-target="#exampleModal" d="m61.255 15.743 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill=@color.ElementAt(1) stroke-width=".062231" />
+                            <text id="text146-8" x="88.07785" y="23.898623" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-9" x="88.07785" y="23.898623" stroke-width=".26458">2</tspan></text>
+                            <rect id="rect216-1" x="63.317" y="22.11" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731" />
+                        </g>
+                        <g id="g289">
+                            <path id="5" data-toggle="modal" data-target="#exampleModal" d="m61.126 37.701 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill=@color.ElementAt(4) stroke-width=".062231" />
+                            <text id="text146-0-5" x="88.211487" y="45.413818" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-3-1" x="88.211487" y="45.413818" stroke-width=".26458">5</tspan></text>
+                            <rect id="rect216-5" x="63.783" y="43.541" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731" />
+                        </g>
+                        <g id="g277">
+                            <path id="3" data-toggle="modal" data-target="#exampleModal" d="m98.554 15.884 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill=@color.ElementAt(2) stroke-width=".062231" />
+                            <text id="text146-2" x="126.96557" y="23.497719" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-1" x="126.96557" y="23.497719" stroke-width=".26458">3</tspan></text>
+                            <rect id="rect216-2" x="101.37" y="23.353" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731" />
+                        </g>
+                        <g id="g295">
+                            <path id="6" data-toggle="modal" data-target="#exampleModal" d="m98.385 37.702 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill=@color.ElementAt(5) stroke-width=".062231" />
+                            <text id="text146-0-2" x="126.96557" y="45.280186" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-3-2" x="126.96557" y="45.280186" stroke-width=".26458">6</tspan></text>
+                            <rect id="rect216-9" x="101.99" y="42.299" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731" />
+                        </g>
+                    </g>
+                </g>
+            </svg>
 
-
-    <div class="row mb-3 mt-3">
-        <div class="col-12">
-            <div class="row">
-                @foreach (var i in Model)
-                {
-                    @if (i.Boxstatus == 0)
-                    {
-                        locker = "locker_empty.png";
-                        link = "/booking/Reserve?id=" + @i.Boxid;
-                    }
-                    else if (i.Boxstatus == 1)
-                    {
-                        locker = "locker_between.png";
-                        link = "/booking?id=" + @i.Boxid;
-                    }
-                    else
-                    {
-                        locker = "locker_busy.png";
-                        link = "/booking?id=" + @i.Boxid;
-
-                    }
-                    <div class="col-md-4 col-6">
-                        <p>@i.Boxid</p>
-                        <button type="button" id="@i.Boxid" class="btn" data-toggle="modal" data-target="#exampleModal" style="width:60%">
-                            <img src="~/images/@locker" width="@widSize%" />
-                        </button>
-                        <a href="@link"></a><br /><br /><br /><br />
-                    </div>
-                }
-            </div>
         </div>
     </div>
-</div>
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container-time">
-                    <div class="timings">
-                        <div> <span> 9:00 </span> AM </div>
-                        <div> 9:30 </div>
-                        <div> <span> 10:00 </span>AM </div>
-                        <div> 10:30 </div>
-                        <div> <span> 11:00 </span>AM </div>
-                        <div> 11:30 </div>
-                        <div> <span> 12:00 </span>PM </div>
-                        <div> 12:30 </div>
-                        <div> <span> 1:00 </span>PM </div>
-                        <div> 1:30 </div>
-                        <div> <span> 2:00 </span>PM </div>
-                        <div> 2:30 </div>
-                        <div> <span> 3:00 </span>PM </div>
-                        <div> 3:30 </div>
-                        <div> <span> 4:00 </span>PM </div>
-                        <div> 4:30 </div>
-                        <div> <span> 5:00 </span>PM </div>
-                        <div> 5:30 </div>
-                        <div> <span> 6:00 </span>PM </div>
-                        <div> 6:30 </div>
-                        <div> <span> 7:00 </span>PM </div>
-                        <div> 7:30 </div>
-                        <div> <span> 8:00 </span>PM </div>
-                        <div> 8:30 </div>
-                        <div> <span> 9:00 </span>PM </div>
+    <div class="row"></div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="modalcontent">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalLabel">Schedule</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden" id="modalbody">
+                    <div class="container" id="modalbody1">
+                        <table id="classTable" class="table table-bordered table-hover" style="max-width:max-content">
+                            <thead>
+                                <tr>
+                                    <th style="width:50%"><h4>start</h4></th>
+                                    <th style="width:50%"><h4>end</h4></th>
+                                    <th style="width:40%"><h4>owner</h4></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablebody">
+                            </tbody>
+                        </table>
                     </div>
+                    <div class="panel panel-primary" id="modalbody2">
+                        <h4 style="color: red;text-align: center;" id="warninghead"></h4>
+                        <div class="panel-heading">Schedule an locker</div>
+                        <div class="panel-body">
+                            <form method="post" action="/booking/authPost">
+                                <div class="row">
+                                    <div class="input-group">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="control-label">locker number</label>
+                                            </div>
+                                        </div>
+                                        <div class='col-md-6'>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control mb-4" name="locker" id="input_locker">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class='col-sm-4'><label class="control-label mt-3">start time</label></div>
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
 
-                    <div class="days" id="events">
+                                            <div class='input-group date' id='datetimepicker1'>
+                                                <input type='text' class="form-control" name="start" id="timeinput" required />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class='col-sm-4'><label class="control-label mt-3">end time</label></div>
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <div class='input-group date' id='datetimepicker2'>
+                                                <input type='text' class="form-control" name="end" id="timeinput" required />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <input type="submit" class="btn btn-primary ml-4" value="Submit" id="submit">
+                                </div>
+
+                            </form>
+                        </div>
                     </div>
 
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" id="book" value="Reservation" />
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                @*<button type="button" class="btn btn-primary">Save changes</button>*@
+        </div>
+    </div>
+
+    <div class="modal fade" id="mmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body" style="height:500px">
+                    <div id="loader-wrapper">
+                        <div id="loader"></div>
+                    </div>
+                    <div class="jumbotron text-center" id="tent">
+                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"viewBox="0 0 367.805 367.805" style="enable-background:new 0 0 367.805 367.805;" xml:space="preserve"><g><path style="fill:#3BB54A;" d="M183.903,0.001c101.566,0,183.902,82.336,183.902,183.902s-82.336,183.902-183.902,183.902S0.001,285.469,0.001,183.903l0,0C-0.288,82.625,81.579,0.29,182.856,0.001C183.205,0,183.554,0,183.903,0.001z" /><polygon style="fill:#D4E1F4;" points="285.78,133.225 155.168,263.837 82.025,191.217 111.805,161.96 155.168,204.801256.001,103.968 	" /></g></svg>
+                        <h3 class="display-3">Success!</h3>
+                        <p class="lead"><strong>Please check your locker</strong> </p>
+                    </div>
+                </div>
+            </div>ß
+        </div>
+    </div>
+    <div class="modal fade" id="mfmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body" style="height:500px">
+                    <div class="jumbotron text-center" id="tent">
+                        <svg viewBox="0 0 512 512" id="Capa_1" xmlns="http://www.w3.org/2000/svg"><path d="m256 0c-141.164062 0-256 114.835938-256 256s114.835938 256 256 256 256-114.835938 256-256-114.835938-256-256-256zm0 0" fill="#f44336" /><path d="m350.273438 320.105469c8.339843 8.34375 8.339843 21.824219 0 30.167969-4.160157 4.160156-9.621094 6.25-15.085938 6.25-5.460938 0-10.921875-2.089844-15.082031-6.25l-64.105469-64.109376-64.105469 64.109376c-4.160156 4.160156-9.621093 6.25-15.082031 6.25-5.464844 0-10.925781-2.089844-15.085938-6.25-8.339843-8.34375-8.339843-21.824219 0-30.167969l64.109376-64.105469-64.109376-64.105469c-8.339843-8.34375-8.339843-21.824219 0-30.167969 8.34375-8.339843 21.824219-8.339843 30.167969 0l64.105469 64.109376 64.105469-64.109376c8.34375-8.339843 21.824219-8.339843 30.167969 0 8.339843 8.34375 8.339843 21.824219 0 30.167969l-64.109376 64.105469zm0 0" fill="#fafafa" /></svg>
+                        <h3 class="display-3">Fail!</h3>
+                        <p class="lead"><strong>Please check calendar list</strong> </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script src="~/js/script.js"></script>
-

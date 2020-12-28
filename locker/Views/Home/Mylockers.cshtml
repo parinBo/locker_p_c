@@ -11,6 +11,7 @@
                 <p class="card-text">Detail your box's reservation</p>
                 <p class="card-text">Locker number : @ViewBag.Boxid</p>
             </div>
+            
             @foreach (var i in Model)
             {
                 <ul class="list-group list-group-flush">
@@ -34,29 +35,18 @@
             button.disabled = true;
             label.style.background = "gray";
         }
+        var url1 = "https://10.153.139.170:5004"
+        var url2 = "https://localhost:44369"
         button.addEventListener('click', e => {
-            if (button.checked == true) {
-                console.log("on")
-                var url = "http://192.168.43.44/on_off.php?on=@ViewBag.pinBox"
-                $.post(url);
+            $.get(url1+"/manage/get", function (value, status) {
                 $.ajax({
                     url: "/home/authLocker/" + @ViewBag.Boxid,
                     type: 'PUT',
-                    data: "value=1"
-                });
-            }
-            else {
-                console.log("off  ")
-                var url = "http://192.168.43.44/on_off.php?off=@ViewBag.pinBox";
-                $.post(url);
-                $.ajax({
-                    url: "/home/authLocker/" + @ViewBag.Boxid,
-                    type: 'PUT',
-                    data: "value=0" 
-                });
-            }
+                    data: "value=" + value[0]
+                })
+                $.post("http://10.153.33.148/on_off.php", { pin:@ViewBag.pinBox, num: value[1] });
+            });
         })
-
         var cancel = document.getElementById("cancel");
         cancel.addEventListener('click', e => {
             var result = confirm("Are you sure?\nYou will cancel this box");

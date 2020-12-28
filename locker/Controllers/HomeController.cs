@@ -24,31 +24,25 @@ namespace locker.Controllers
         {
             _logger = logger;
         }
-
-
         public IActionResult Index()
         {
             var logon = HttpContext.Session.GetInt32("login");
             var Userid = HttpContext.Session.GetInt32("Userid");
             if (logon == 1)
             {
-
                 var has = (int)_ctx.Users.Where(u => u.Userid == Userid).First().Has;
                 var box = _ctx.Boxs.ToList();
                 var boxToday = _ctx.Boxtimes.Where(w => w.Bookingstart.Value.Date == DateTime.Now.Date);
                 var loopBox = boxToday.ToList();
-
                 HttpContext.Session.SetInt32("has", has);
                 TempData["username"] = HttpContext.Session.GetString("username");
                 ViewBag.today = DateTime.Now.ToString("yyyy-MM-dd");
                 ViewBag.addDays = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd");
-
                 manage.fit(loopBox);
                 manage.checkDateExp();
                 box = manage.getBoxDate(DateTime.Now);
-                Console.WriteLine("Home controller : index");
-
-
+               
+                
                 return View(box);
             }
             else
@@ -57,18 +51,23 @@ namespace locker.Controllers
             }
 
         }
-
-        public IActionResult searchdate(DateTime date)
+        [HttpGet]
+        public IActionResult Index(DateTime date)
         {
+            if (date.ToString() == "01/01/0001 00:00:00")
+            {
+                date = DateTime.Now;
+            }
+
             var logon = HttpContext.Session.GetInt32("login");
             var Userid = HttpContext.Session.GetInt32("Userid");
             if (logon == 1)
             {
+
                 ViewBag.today = DateTime.Now.ToString("yyyy-MM-dd");
                 ViewBag.addDays = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd");
                 TempData["username"] = HttpContext.Session.GetString("username");
                 var box = _ctx.Boxs.ToList();
-                Console.WriteLine("searchdate : " + date);
                 manage.fit(_ctx.Boxtimes.ToList());
                 manage.checkDateExp();
                 box = manage.getBoxDate(date);
@@ -78,9 +77,7 @@ namespace locker.Controllers
             {
                 return Redirect("/login");
             }
-
         }
-
         public IActionResult Mylockers()
         {
             try
@@ -89,61 +86,84 @@ namespace locker.Controllers
                 var Userid = (int)HttpContext.Session.GetInt32("Userid");
                 var box = _ctx.Boxtimes.Where(b => b.Userid == Userid);
                 var boxes = new List<showclass>();
-                int Boxid = 0;
-                string set = "";
                 manage.fit(box.ToList());
                 manage.checkDateExp();
                 boxes = manage.getMyLocker(Userid);
-                foreach (var i in boxes)
+                foreach(var i in boxes)
+            {
+                ViewData["canUse"] = "true";
+                ViewBag.Boxid = i.Boxid;
+                var locker = _ctx.Boxs.Where(a => a.Boxid == i.Boxid).First();
+                ViewBag.setCheckbox = locker.BoxCheck == 1 ? "true" : "false";
+                ViewBag.pinBox = locker.Pin;
+                if(i.Bookingstart.TimeOfDay <= DateTime.Now.TimeOfDay && i.Bookingstart.Day == DateTime.Now.Day)
                 {
-                    ViewData["canUse"] = i.username;
-                    ViewBag.Boxid = i.Boxid;
-                    set = _ctx.Boxs.Where(a => a.Boxid == i.Boxid).First().BoxCheck == 1 ? "true" : "false";
-                    ViewBag.pinBox = _ctx.Boxs.Where(a => a.Boxid == i.Boxid).First().Pin;
+                    ViewData["canUse"] = "false";
+                    _ctx.Boxs.Where(the => the.Boxid == i.Boxid).First().Userid = Userid;
+                    _ctx.SaveChanges();
                 }
-                ViewBag.setCheckbox = set;
+            }
+
+                
+         
+               
+                
+               /* _ctx.Boxs.Where(i => i.Boxid == use.First().Boxid).First().Userid = Userid;*/
+
                 return View(boxes);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return Redirect("/");
             }
-            
+
+
         }
         public IActionResult file()
         {
             return View();
         }
-
         [HttpGet]
         [Route("home/get")]
-        public IActionResult file(string input)
+        public IActionResult file(string input,string type)
         {
+            Console.WriteLine("TYPE : "+type);
             string[] lines = System.IO.File.ReadAllLines(Path.Combine("wwwroot", "Reservation.txt"));
-            var find = new List<string>();
+            var find = new List<filelist>();
             int count = 0;
             foreach (var i in lines)
             {
                 var n = i.Replace(",", "");
                 var start = n.Substring(8, 19);
                 var end = n.Substring(27, 19);
-                var locker = n.Substring(48, 15);
-                var num = n.Substring(62, 1);
-                var at = n.Substring(63, 22);
-                var user = n.Substring(85);
-                if (num == input)
+                var locker = n.Substring(46, 15);
+                var num = n.Substring(60, 1);
+                var at = n.Substring(65, 19);
+                var user = n.Substring(87);
+                if (type == "lockers")
                 {
-                    find.Add(locker);
-                    find.Add($"{at} ==>start: {start} end: {end} // {user}");
-                    count++;
+                    if (num == input)
+                    {
+                        find.Add(new filelist { start = start, end = end, date = at, by = user, locker = num });
+                        count++;
+                    }
+                }
+                if (type == "users")
+                {
+                    if (user == input)
+                    {
+                        find.Add(new filelist { start = start, end = end, date = at, by = user, locker = num });
+                        count++;
+                    }
                 }
                 if ("all" == input)
                 {
-                    find.Add(locker);
-                    find.Add($"{at} ==>start: {start} end: {end}  // {user}");
+                    find.Add(new filelist { start = start, end = end, date = at, by = user, locker = num });
                     count++;
                 }
-                Console.WriteLine($"{locker}\nstart: {start} and end: {end}  {num} {at} {user}");
+
+
             }
 
             if (input != null)
@@ -156,34 +176,25 @@ namespace locker.Controllers
                 return View();
             }
         }
-
         [HttpGet]
-        public JsonResult time(int id)
+        public string time(int id,DateTime date)
         {
-            var times = _ctx.Boxtimes.Where(i => i.Boxid == id).Where(i => i.Bookingstart.Value.Day == DateTime.Now.Day);
-            //  var usersList = new List<TimeEvent> { new TimeEvent { start=0,end=30},new TimeEvent { start = 90, end = 180 } };
-            Dictionary<string, string> d = new Dictionary<string, string>();
-            var a = new List<Dictionary<string, string>>();
-            foreach(var i in times)
+            if(date.ToString()== "01/01/0001 00:00:00")
             {
-                if (Regex.IsMatch(i.Bookingstart.Value.Hour.ToString(), @"\b8"))
-                {
-
-                }
-                    Console.WriteLine(i.Bookingstart);
+                date = DateTime.Now;
             }
+            var times = _ctx.Boxtimes.Where(i => i.Boxid == id).Where(i => i.Bookingstart.Value.Day == date.Day);
+            var data = times.ToList();
             var boss = new List<TimeEvent>();
-            boss.Add(new TimeEvent { start = 0, end = 30, });
-            boss.Add(new TimeEvent { start = 30, end = 90, });
-            d.Add("start", "240");
-            d.Add("end", "360");
-            d.Add("name", "test");
-            a.Add(d);
-
-            //return boss;
-
-            var jsonString = JsonConvert.SerializeObject(boss).Replace("\u0022", "");
-            return Json(jsonString);
+            foreach (var i in data)
+            {
+                var usr = _ctx.Users.Where(res => res.Userid == i.Userid).First().Username;
+                var s = ((DateTime)i.Bookingstart).ToString("dd/MM/yyyy HH:mm");
+                var e = ((DateTime)i.BookingEnd).ToString("dd/MM/yyyy HH:mm");
+                boss.Add(new TimeEvent { start = s, end = e, name = usr });
+            }
+             var jsonString = JsonConvert.SerializeObject(boss);
+            return jsonString;
         }
 
     }

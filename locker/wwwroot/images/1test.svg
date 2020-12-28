@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="svg8" width="210mm" height="297mm" version="1.1" viewBox="0 0 210 297" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <style id="style10"/>
+ <metadata id="metadata5">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1">
+  <g id="g72">
+   <path id="rect12" d="m18.71 10.961h120.57v53.414h-120.57z" fill="#fa9538" stroke-width=".18778"/>
+   <path id="rect12-4" d="m22.679 14.363h114.05v45.618h-114.05z" stroke-width=".16878"/>
+   <g id="g265">
+    <path id="locker1" d="m24.379 15.686 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill="#0f0" stroke-width=".062231"/>
+    <text id="text146" x="51.182114" y="24.187891" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144" x="51.182114" y="24.187891" stroke-width=".26458">1</tspan></text>
+    <rect id="rect216" x="28.309" y="21.726" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731"/>
+   </g>
+   <g id="g283">
+    <path id="locker4" d="m24.237 37.713 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill="#0f0" stroke-width=".062231"/>
+    <text id="text146-0" x="51.595562" y="45.146549" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-3" x="51.595562" y="45.146549" stroke-width=".26458">4</tspan></text>
+    <rect id="rect216-8" x="28.841" y="43.231" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731"/>
+   </g>
+   <g id="g271">
+    <path id="locker2" d="m61.255 15.743 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill="#0f0" stroke-width=".062231"/>
+    <text id="text146-8" x="88.07785" y="23.898623" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-9" x="88.07785" y="23.898623" stroke-width=".26458">2</tspan></text>
+    <rect id="rect216-1" x="63.317" y="22.11" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731"/>
+   </g>
+   <g id="g289">
+    <path id="locker5" d="m61.126 37.701 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill="#0f0" stroke-width=".062231"/>
+    <text id="text146-0-5" x="88.211487" y="45.413818" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-3-1" x="88.211487" y="45.413818" stroke-width=".26458">5</tspan></text>
+    <rect id="rect216-5" x="63.783" y="43.541" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731"/>
+   </g>
+   <g id="g277">
+    <path id="locker3" d="m98.554 15.884 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill="#0f0" stroke-width=".062231"/>
+    <text id="text146-2" x="126.96557" y="23.497719" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-1" x="126.96557" y="23.497719" stroke-width=".26458">3</tspan></text>
+    <rect id="rect216-2" x="101.37" y="23.353" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731"/>
+   </g>
+   <g id="g295">
+    <path id="locker6" d="m98.385 37.702 35.505 0.09078-0.069 19.922-35.505-0.09078z" fill="#0f0" stroke-width=".062231"/>
+    <text id="text146-0-2" x="126.96557" y="45.280186" fill="#000000" font-family="sans-serif" font-size="8px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan id="tspan144-3-2" x="126.96557" y="45.280186" stroke-width=".26458">6</tspan></text>
+    <rect id="rect216-9" x="101.99" y="42.299" width="2.2638" height="9.5131" fill="#520" stroke-width=".23731"/>
+   </g>
+  </g>
+ </g>
+</svg>

@@ -17,17 +17,17 @@ namespace locker.Controllers
 
         public IActionResult Index(int id)
         {
-            var logon = HttpContext.Session.GetInt32("login")==1?true:false;
+            var logon = HttpContext.Session.GetInt32("login") == 1 ? true : false;
             if (logon)
             {
                 ManageController m = new ManageController();
                 var show = new List<showclass>();
                 var Userid = HttpContext.Session.GetInt32("Userid");
                 var box = ctx.Boxtimes.FromSqlInterpolated($"select * from Boxtimes where Boxid={id}");
-                var boxOrder =box.OrderBy(aa => aa.Bookingstart).ToList();
+                var boxOrder = box.OrderBy(aa => aa.Bookingstart).ToList();
                 ViewData["id"] = id;
                 TempData["username"] = HttpContext.Session.GetString("username");
-                
+
                 m.fit(box.ToList());
                 m.checkDateExp();
                 m.fit(boxOrder);
@@ -39,9 +39,8 @@ namespace locker.Controllers
             {
                 return Redirect("/");
             }
-            
-        }
 
+        }
         public IActionResult Reserve(int id)
         {
             TempData["id"] = id;

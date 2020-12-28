@@ -22,55 +22,63 @@ namespace locker.Controllers
         {
             return View();
         }
-        
         public void fit(List<Boxtime> box)
         {
             this.boxTime = box;
         }
-
         public List<Box> getBoxDate(DateTime dateTime)
         {
             var BOX = _ctx.Boxs.ToList();
-            Console.WriteLine("getBoxDate  : "+dateTime.Date);
             var b = _ctx.Boxtimes.Where(a => a.Bookingstart.Value.Date == dateTime.Date);
             var bb = b.ToList();
+            var li = new List<int>();
+            var libox = new List<int> { 1, 2, 3, 4, 5, 6 };
             foreach (var i in bb)
             {
-                var count = b.Where(qq => qq.Boxid == i.Boxid).Count();
-                if (count == 1)
+                    var count = b.Where(qq => qq.Boxid == i.Boxid).Count();
+                    if (count == 0)
+                    {
+                        _ctx.Boxs.Where(qq => qq.Boxid == i.Boxid).First().Boxstatus = 1;
+                    }
+                    else if (count >= 1)
+                    {
+                        _ctx.Boxs.Where(qq => qq.Boxid == i.Boxid).First().Boxstatus = 2;
+                    }
+                li.Add((int)i.Boxid);
+            }
+            foreach(var i in libox)
+            {
+                if (li.Contains(i))
                 {
-                    _ctx.Boxs.Where(qq => qq.Boxid == i.Boxid).First().Boxstatus = 1;
                 }
-                else if (count == 2)
+                else
                 {
-                    _ctx.Boxs.Where(qq => qq.Boxid == i.Boxid).First().Boxstatus = 2;
+                    _ctx.Boxs.Where(qq => qq.Boxid == i).First().Boxstatus = 0;
                 }
             }
-            return BOX;
+            _ctx.SaveChanges();
+                return BOX;
         }
-
         public List<showclass> getMyLocker(int Userid)
         {
             var show = new List<showclass>();
             var has = _ctx.Users.Where(i => i.Userid == Userid).First().Has;
-            Console.WriteLine("My locker Manage: " + has);
             if (has == 1)
             {
                 var i = this.boxTime.First();
                 //check today you can use open/close the box : 0 = have not, : 1 = have
-                var use = _ctx.Boxtimes.Where(i => i.Userid == Userid).Where(u => u.Bookingstart.Value.Date == DateTime.Now.Date);
+                /*var use = _ctx.Boxtimes.Where(i => i.Userid == Userid).Where(u => u.Bookingstart.Value.Date == DateTime.Now.Date);
                 string username = "true";
                 if (use.Count() != 0)
                 {
                     username = (!(use.First().Bookingstart.Value.TimeOfDay <= DateTime.Now.TimeOfDay)).ToString().ToLower();
-                    Console.WriteLine(use.First().Bookingstart);
-                }
-                Console.WriteLine(username+"  ");
-                show.Add(new showclass {Bookingstart=(DateTime)i.Bookingstart,BookingEnd=(DateTime)i.BookingEnd,username=username,Boxid=(int)i.Boxid });
+                    _ctx.Boxs.Where(i => i.Boxid == use.First().Boxid).First().Userid = Userid;
+                    _ctx.SaveChanges();
+                }*/
+                show.Add(new showclass {Bookingstart=(DateTime)i.Bookingstart,BookingEnd=(DateTime)i.BookingEnd,Boxid=(int)i.Boxid });
             }
             return show;
         }
-
         public List<showclass> getDetailBoxAt(int id)
         {
             var show = new List<showclass>();
@@ -84,7 +92,6 @@ namespace locker.Controllers
             }
             return show;
         }
-
         public void checkDateExp()
         {
             var tt = this.boxTime.Where(qq => qq.BookingEnd <= DateTime.Now).ToList();
@@ -97,50 +104,54 @@ namespace locker.Controllers
             //return boxTime;
         }
 
+
+
+        [HttpGet]
+        public string getauthPost()
+        {
+            var res = (string)TempData["getauthenPost"];
+            return res;
+        }
         [HttpPost]
         [Route("booking/authPost")]
-        public IActionResult authPost(Booking b)
+        public IActionResult authPost(string start, string end, int locker)
         {
-            DateTime reservation = b.startdate;
-            DateTime s, e;
-            var Userid = HttpContext.Session.GetInt32("Userid");
-            int id = (int)TempData["id"];
-            if (Regex.IsMatch(b.starttime, @"\b8"))
+            var count = 0;
+            var userid = HttpContext.Session.GetInt32("Userid");
+            Console.WriteLine("auth post startTime: " + start);
+            DateTime startTime = DateTime.ParseExact(start, "dd/MM/yyyy HH:mm", null);
+            DateTime endTime = DateTime.ParseExact(end, "dd/MM/yyyy HH:mm", null);
+            var timeList = _ctx.Boxtimes.Where(i => i.Boxid == locker).ToList();
+            try
             {
-                s = new DateTime(reservation.Year, reservation.Month, reservation.Day, 8, 0, 0);
-                e = new DateTime(reservation.Year, reservation.Month, reservation.Day, 12, 0, 0);
-            }
-            else
-            {
-                s = new DateTime(reservation.Year, reservation.Month, reservation.Day, 13, 0, 0);
-                e = new DateTime(reservation.Year, reservation.Month, reservation.Day, 17, 0, 0);
-
-            }
-            var book = _ctx.Boxtimes.Where(u => u.Bookingstart == s).Where(b => b.Boxid == id).Count();
-            if (book >= 1)
-            {
-                TempData["show"] = "true";
-                TempData["msg"] = "this time is busy";
-                Console.WriteLine("you cannot booking");
-                return RedirectToAction("Reserve", new { id = id });
-            }
-            else
-            {
-                var u = _ctx.Users.Where(i => i.Userid == Userid).First().Username;
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine("wwwroot", "Reservation.txt"), true))
+                foreach (var i in timeList)
                 {
-                    outputFile.WriteLine($"Booking:{s.ToString("dd/MM/yyyy HH:mm:ss")},{e.ToString("dd/MM/yyyy HH:mm:ss")},{Userid},Locker number {id},At {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")},By {u}");
+                    if (startTime < i.BookingEnd && i.Bookingstart < endTime)
+                    {
+                        count += 1;
+                    }
                 }
-                // add box and change status use has box
-                Boxtime boxtime = new Boxtime { Bookingstart = s, BookingEnd = e, Boxid = id, Userid = Userid };
-                _ctx.Boxtimes.Add(boxtime);
-                _ctx.Users.Where(t => t.Userid == Userid).First().Has = 1;
-                _ctx.SaveChanges();
+                if (count == 0)
+                {
+                    TempData["getauthenPost"] = "0";
+                    Boxtime boxtime = new Boxtime { Bookingstart = startTime, BookingEnd = endTime, Boxid = locker, Userid = userid };
+                    _ctx.Boxtimes.Add(boxtime);
+                    _ctx.Users.Where(t => t.Userid == userid).First().Has = 1;
+                    _ctx.SaveChanges();
+                }
+                else
+                {
+                    TempData["getauthenPost"] = "1";
+
+                }
+
             }
+            catch
+            {
+            }
+            return Redirect("/");
 
-            return Redirect("/home/Mylockers");
         }
-
         [HttpPut]
         [Route("home/authLocker/{id}")]
         public string Put(int id, int value)
@@ -149,13 +160,38 @@ namespace locker.Controllers
             {
                 var Userid = HttpContext.Session.GetInt32("Userid");
                 var boxTime = _ctx.Boxtimes.Where(i => i.Bookingstart.Value.Date == DateTime.Now.Date).Where(i => i.Userid == Userid).First();
-                _ctx.Boxs.Where(i => i.Boxid == boxTime.Boxid).First().BoxCheck = value;
+                var box = _ctx.Boxs.Where(i => i.Boxid == boxTime.Boxid).First().BoxCheck;
+                Console.WriteLine("test1 "+box+"   "+id);
+                _ctx.Boxs.Where(qq => qq.Boxid == id).First().BoxCheck = value;
+                Console.WriteLine("change to:    "+value);
                 _ctx.SaveChanges();
-                return "Put Method is work " + value;
+                return "Put Method is work ";
             }
             catch
             {
                 return "error";
+            }
+        }
+        [HttpGet]
+        [Route("manage/get")]
+        public IEnumerable<string> getValue()
+        {
+            try
+            {
+                var boxes = "";
+                if ((int)HttpContext.Session.GetInt32("Userid") != null)
+                {
+                    var Userid = (int)HttpContext.Session.GetInt32("Userid");
+                    //switch
+                    var tt =_ctx.Boxtimes.Where(ii => ii.Userid == Userid).First().Boxid;
+                    boxes = _ctx.Boxs.Where(i => i.Userid == Userid).Where(ii=>ii.Boxid==tt).First().BoxCheck == 0 ? "1" : "0";
+                }
+                var box = boxes == "0" ? "in" : "out";
+                return new string[] { boxes, box };
+            }
+            catch
+            {
+                return new string[] { "", "" };
             }
 
         }
@@ -171,7 +207,13 @@ namespace locker.Controllers
             _ctx.SaveChanges();
             return id + "";
         }
-
-
+       
+        [HttpGet]
+        public bool getHas()
+        {
+            var Userid = (int)HttpContext.Session.GetInt32("Userid");
+            var has = _ctx.Users.Where(i => i.Userid == Userid).First().Has;
+            return has == 1 ? true : false;
+        }
     }
 }

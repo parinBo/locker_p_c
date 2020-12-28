@@ -3,7 +3,8 @@ namespace locker.Models
 {
     public class TimeEvent
     {
-        public int start;
-        public int end;
+        public string start;
+        public string end;
+        public string name;
     }
 }

@@ -21,6 +21,7 @@ namespace locker
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    //webBuilder.UseUrls("http://*:5003", "https://*:5004");
                 });
     }
 }

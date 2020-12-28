@@ -5,152 +5,70 @@ let collisions = [];
 let width = [];
 let leftOffSet = [];
 let id = "";
+var c = 0;
+let countt = 0;
+let old = "";
+var url = "https://localhost:5004/"
+//var url1 = "https://10.153.139.170:5004/"
+//var url2 = "https://localhost:44369/"
+//var url3 = "https://192.168.2.52:5004/"
 $(document).ready(function () {
-    $("button").click(function () {
+    $("path").click(function () {
         id = this.id;
+        $("#input_locker").attr("value", id);
+        $("#input_locker").attr("readonly", "readonly");
+        $("td").remove()
+        main()
+        
     });
 })
 
+var createtable = (s, e, n) => {
+    var table = document.getElementById("tablebody");
+    var tr = document.createElement("tr");
+    var td1 = document.createElement("td");
+    var td2 = document.createElement("td");
+    var td3 = document.createElement("td");
+    td1.innerHTML = s;
+    td2.innerHTML = e;
+    td3.innerHTML = n;
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    table.appendChild(tr);
 
-// append one event to calendar
-
-var createEvent = (height, top, left, units,name) => {
-    let node = document.createElement("DIV");
-    node.className = "event";
-    node.innerHTML =
-        "<span class='title'> "+name+" </span > "
-  //<br><span class='location'> Sample Location </span>";
-
-    // Customized CSS to position each event
-    node.style.width = (containerWidth / units / 2) + "px";
-    node.style.height = height + "px";
-    node.style.top = top + "px";
-    node.style.left = 100 + left + "px";
-
-    document.getElementById("events").appendChild(node);
+}
+var tablesss = async (s) => {
+    s.forEach((e) => {
+        let start = e.start
+        let end = e.end
+        let name = e.name
+        createtable(start,end,name)
+       
+    })
+    c=0
+    
 }
 
-/* 
-collisions is an array that tells you which events are in each 30 min slot
-- each first level of array corresponds to a 30 minute slot on the calendar 
-  - [[0 - 30mins], [ 30 - 60mins], ...]
-- next level of array tells you which event is present and the horizontal order
-  - [0,0,1,2] 
-  ==> event 1 is not present, event 2 is not present, event 3 is at order 1, event 4 is at order 2
-*/
-
-function getCollisions(events) {
-
-    //resets storage
-    collisions = [];
-
-    for (var i = 0; i < 24; i++) {
-        var time = [];
-        for (var j = 0; j < events.length; j++) {
-            time.push(0);
+var globalData;
+const dataaa = async (id) => {
+    try {
+        var urlParams = new URLSearchParams(window.location.search);
+        var date = urlParams.get('date')
+        if (date == null) {
+            date = moment().format('YYYY-MM-DD')
         }
-        collisions.push(time);
+        const data = await fetch('home/time/' + id + "?date="+date);
+        globalData = data.json();
+        return globalData;
     }
-
-    events.forEach((event, id) => {
-        let end = event.end;
-        let start = event.start;
-        let order = 1;
-
-        while (start < end) {
-            timeIndex = Math.floor(start / 30);
-
-            while (order < events.length) {
-                if (collisions[timeIndex].indexOf(order) === -1) {
-                    break;
-                }
-                order++;
-            }
-            console.log("order : " + order);
-            collisions[timeIndex][id] = order;
-            start = start + 30;
-        }
-
-        collisions[Math.floor((end - 1) / 30)][id] = order;
-    });
+    catch (err) {
+        console.log(err);
+    }
 };
 
-/*
-find width and horizontal position
-
-width - number of units to divide container width by
-horizontal position - pixel offset from left
-*/
-function getAttributes(events) {
-
-    //resets storage
-    width = [];
-    leftOffSet = [];
-
-    for (var i = 0; i < events.length; i++) {
-        width.push(0);
-        leftOffSet.push(0);
-    }
-
-    collisions.forEach((period) => {
-
-        // number of events in that period
-        let count = period.reduce((a, b) => {
-            return b ? a + 1 : a;
-        })
-
-        if (count > 1) {
-            period.forEach((event, id) => {
-                // max number of events it is sharing a time period with determines width
-                if (period[id]) {
-                    if (count > width[id]) {
-                        width[id] = count;
-                    }
-                }
-
-                if (period[id] && !leftOffSet[id]) {
-                    leftOffSet[id] = period[id];
-                }
-            })
-        }
-    });
-};
-var layOutDay = (events) => {
-
-    // clear any existing nodes
-    var myNode = document.getElementById("events");
-    myNode.innerHTML = '';
-
-    getCollisions(events);
-    getAttributes(events);
-
-    events.forEach((event, id) => {
-        console.log("name "+event.name)
-        let height = (event.end - event.start) / minutesinDay * containerHeight;
-        let top = event.start / minutesinDay * containerHeight;
-        let end = event.end;
-        let start = event.start;
-        let units = width[id];
-        if (!units) { units = 1 };
-        let left = (containerWidth / width[id]) * (leftOffSet[id] - 1) + 10;
-        if (!left || left < 0) { left = 10 };
-        createEvent(height, top, left, units, event.name);
-    });
+const main = async () => {
+    let a = await dataaa(id);
+    await tablesss(a)
+ 
 }
-
-
-const events = [];
-var obj;
-//var test = fetch("https://localhost:5001/home/time").then(res => res.json()).then(data => return data)
-
-function doSomethingWithText(text) {
-    console.log(text);
-    this.obj = JSON.parse(text);
-    console.log(obj.start)
-
-}
-
-fetch('https://localhost:5001/home/time')
-    .then(data => data.text())
-    .then(text => doSomethingWithText(text))
-//layOutDay(events);

@@ -25,7 +25,7 @@ namespace locker.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=localhost,1433;Database=dotnet;User=sa;Password=Parin123; ");
+                optionsBuilder.UseSqlServer("Server=localhost,1401;Database=dotnet;User=sa;Password=Parin123; ");
             }
         }
 
